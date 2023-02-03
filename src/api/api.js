@@ -7,6 +7,9 @@ import {
 } from '../axios/index.js'
 
 export const login = p => httpPost(`/api/v1/user/login/`, p);
+export const login_out = p => httpGet(`/api/v1/user/login/`);
+
+
 
 // 账号相关接口
 export const get_user_info = p => httpGet(`/api/v1/user/me/`);

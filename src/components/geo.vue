@@ -80,7 +80,6 @@ export default {
     // let index = schoolList.findIndex((item) => {
     //   return item.name == this.schoolname;
     // });
-    console.log(index, "datas");
   },
   methods: {
     resetGeo(e) {

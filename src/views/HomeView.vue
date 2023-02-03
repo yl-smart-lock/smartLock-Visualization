@@ -622,7 +622,7 @@ export default {
 <style lang="less" scoped>
 .nextPage{
   width: 100px;
-  right: 50px;
+  right: 150px;
   top: 20px;
   position: absolute;
   height: 30px;
