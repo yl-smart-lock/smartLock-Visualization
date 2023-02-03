@@ -1,6 +1,6 @@
 # smartLock-Visualization
 智能门锁驾驶舱
-# 使用矿建
+# 使用框架
 Vue2.0
 # 基本命令
 运行命令：npm run serve
