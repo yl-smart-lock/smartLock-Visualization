@@ -1,39 +1,84 @@
-const { defineConfig } = require('@vue/cli-service')
-module.exports = defineConfig({
-  transpileDependencies: true,
+// var webpack = require('webpack');
+const path = require('path');
+
+const webpack = require('webpack')
+const CompressionPlugin = require('compression-webpack-plugin')
+const zlib = require('zlib')
+
+module.exports = {
+  productionSourceMap: false,
+  chainWebpack: config => { //①这里是配置的部分
+    config
+      .plugin('webpack-bundle-analyzer')
+      .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
+  },
+  configureWebpack: { //这里是添加的部分
+    plugins: [
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+      // 下面两项配置才是 compression-webpack-plugin 压缩配置
+      // 压缩成 .gz 文件
+      new CompressionPlugin({
+        filename: '[path][base].gz',
+        algorithm: 'gzip',
+        test: /\.js$|\.css$|\.html$/,
+        threshold: 10240,
+        minRatio: 0.8
+      }),
+      // 压缩成 .br 文件，如果 zlib 报错无法解决，可以注释这段使用代码，一般本地没问题，需要注意线上服务器会可能发生找不到 zlib 的情况。
+      new CompressionPlugin({
+        filename: '[path][base].br',
+        algorithm: 'brotliCompress',
+        test: /\.(js|css|html|svg)$/,
+        compressionOptions: {
+          params: {
+            [zlib.constants.BROTLI_PARAM_QUALITY]: 11
+          }
+        },
+        threshold: 10240,
+        minRatio: 0.8
+      })
+    ],
+  },
+
   css: {
     loaderOptions: {
+      css: {},
       postcss: {
-        postcssOptions:{
-          plugins: [
-            require('postcss-pxtorem')({
-              rootValue: 40, // lib-flexible 将屏幕分成10份(10rem)，这里设置表示设计图宽度为10*37.5=375px
-              unitPrecision: 5,  // 保留rem小数点多少位
-              propList: ['*', '!border'], // 存储将被转换的属性列表，'!font-size' 即不对字体进行rem转换
-              selectorBlackList: ['.radius'], // 要忽略并保留为px的选择器，例如fs-xl类名，里面有关px的样式将不被转换，支持正则写法。
-              replace: true,
-              mediaQuery: false, //（布尔值）媒体查询( @media screen 之类的)中不生效
-              minPixelValue: 4, // 设置要替换的最小像素值，px小于4的不会被转换
-              exclude: /(node_module)/,  //默认false，可以（reg）利用正则表达式排除某些文件夹的方法，例如/(node_module)/ 。如果想把前端UI框架内的px也转换成rem，请把此属性设为默认值
-            })
-          ]
-        },
-       
+        plugins: [
+          require('postcss-px2rem-exclude')({
+            remUnit: 192,
+            exclude: /node_modules|folder_name/i
+          })
+        ]
       }
     }
   },
+
   devServer: {
     proxy: {
       '/api': {
         // target: 'http://6.196.87.160:8000/',
         target: 'https://api.huizhujia.com/',
+        // target: 'https://huilaodong.aidanke.com//hld/',
+
         ws: false,
         changeOrigin: true,
         pathRewrite: {
           "^/api": ""
         }
       },
+      '/hld-media': {
+        // target: 'http://6.196.87.160:8000/',
+        target: 'https://api.huizhujia.com/',
+        // target: 'https://huilaodong.aidanke.com/',
+        ws: false,
+        changeOrigin: true,
+        pathRewrite: {
+          "^/hld-media": ""
+        }
+      },
+
     }
   },
   publicPath: './',
-})
+}

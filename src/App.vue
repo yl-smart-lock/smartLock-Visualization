@@ -14,11 +14,15 @@
   background-image: url(./assets/bg.jpg);
   background-size: 100% 100%;
   width: 100%;
+  min-width: 1226px;
   position: fixed;
   height: 100%;
 }
+
 body{
   width: 100%;
+  min-width: 1226px;
+
   height: 100%;
   margin: 0;
 }

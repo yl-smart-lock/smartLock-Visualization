@@ -1,7 +1,14 @@
 <template>
   <div class="home">
-    <headers  msg="流口全域管理数据驾驶舱"/>
+    <headers msg="流口全域管理数据驾驶舱" />
     <div class="nextPage" @click="toPage">下一页</div>
+    <div class="jiguan">
+      <div class="jiguanItem">籍贯分布</div>
+      <div class="jiguanItem" v-for="(item, index) in zoneData" :key="index">
+        <span v-if="item.zone"> {{ item.zone }}:</span>
+        <span v-else>未实人认证：</span><span>{{ item.count }}</span>
+      </div>
+    </div>
     <div class="main">
       <div class="left">
         <div class="people">
@@ -21,17 +28,11 @@
         </div>
         <div class="people peopleHeight">
           <div class="people_top">近15 45天出租数量</div>
-          <div
-            class="leftCharts"
-            id="myChart"
-          ></div>
+          <div class="leftCharts" id="myChart"></div>
         </div>
         <div class="people peopleHeight">
           <div class="people_top">近一、二周、三十天开锁数量</div>
-          <div
-            class="leftCharts"
-            id="myChart1"
-          ></div>
+          <div class="leftCharts" id="myChart1"></div>
         </div>
       </div>
       <div class="center">
@@ -42,7 +43,7 @@
             </div>
             <div class="countBox">
               <div class="countTitle">登记房屋总数</div>
-              <div class="count">{{totalData.total_count}}</div>
+              <div class="count">{{ totalData.total_count }}</div>
             </div>
           </div>
           <div class="countItem">
@@ -51,7 +52,11 @@
             </div>
             <div class="countBox">
               <div class="countTitle">空置房屋</div>
-              <div class="count">{{totalData.total_count-totalData.current_lock_tenanted_count }}</div>
+              <div class="count">
+                {{
+                  totalData.total_count - totalData.current_lock_tenanted_count
+                }}
+              </div>
             </div>
           </div>
           <div class="countItem">
@@ -60,15 +65,13 @@
             </div>
             <div class="countBox">
               <div class="countTitle">在住房屋</div>
-              <div class="count">{{totalData.current_lock_tenanted_count }}</div>
+              <div class="count">
+                {{ totalData.current_lock_tenanted_count }}
+              </div>
             </div>
           </div>
         </div>
-        <Geo
-          id="china_map"
-          :render_random="geo_render_random"
-          datas="25rem"
-        ></Geo>
+        <Geo id="china_map" :render_random="geo_render_random"></Geo>
       </div>
       <div class="right">
         <div class="rightBox">
@@ -93,7 +96,13 @@
 import headers from "@/components/header.vue";
 // import 'echarts/map/js/china.js'
 import Geo from "@/components/geo";
-import { get_chart_data, get_current_data, get_lock_data,get_zone_conf } from "@/api/api";
+import {
+  get_chart_data,
+  get_current_data,
+  get_lock_data,
+  get_zone_conf,
+  get_zone_data,
+} from "@/api/api";
 
 function objSort(obj) {
   let newkey = Object.keys(obj).sort();
@@ -119,22 +128,30 @@ export default {
       chartsData2: [],
       chartsData3: [],
       chartsData4: [],
+      zoneData: [],
     };
   },
   mounted() {
     this.getData();
     this.getCurrentData();
     this.getLockData();
-    this.getZoneConf()
+    this.getZoneConf();
+    this.getZoneData();
   },
   methods: {
-    toPage(){
-      this.$router.push('/secondPage')
-    },  
-    getZoneConf(){
-      get_zone_conf().then(res=>{
-        console.log(res,'777')
-      })
+    toPage() {
+      this.$router.push("/secondPage");
+    },
+    getZoneConf() {
+      get_zone_conf().then((res) => {
+        console.log(res, "777");
+      });
+    },
+    getZoneData() {
+      get_zone_data().then((res) => {
+        this.zoneData = res;
+        console.log(res, "777");
+      });
     },
     getLockData() {
       get_lock_data().then((res) => {
@@ -172,7 +189,7 @@ export default {
               return itm.handle_type == 2;
             });
             if (index2 != -1) {
-              this.chartsData3.push(its[index1].count);
+              this.chartsData3.push(its[index2].count);
             } else {
               this.chartsData3.push(0);
             }
@@ -181,8 +198,9 @@ export default {
         this.login_init();
         this.login_init1();
         this.login_init2();
-
-        console.log(this.chartsData2, "222");
+        sessionStorage.setItem("chartsData1", JSON.stringify(this.chartsData1));
+        sessionStorage.setItem("chartsData2", JSON.stringify(this.chartsData2));
+        console.log(this.chartsData1, "222");
       });
     },
     getCurrentData() {
@@ -301,6 +319,9 @@ export default {
         ],
       };
       myChart.setOption(option);
+      window.addEventListener("resize", function () {
+        myChart.resize();
+      });
     },
     drawLine1() {
       // 基于准备好的dom，初始化echarts实例
@@ -421,6 +442,9 @@ export default {
         ],
       };
       myChart.setOption(option);
+      window.addEventListener("resize", function () {
+        myChart.resize();
+      });
     },
     login_init1() {
       let myChart = this.$echarts.init(document.getElementById("charts2"));
@@ -437,11 +461,10 @@ export default {
           },
         },
         grid: {
-          show: false,
-          top: "25%", // 一下数值可为百分比也可为具体像素值
-          right: "5%",
-          bottom: "20%",
-          left: "10%",
+          x: 43,
+          x2: 20,
+          y: 30,
+          y2: 20,
         },
         xAxis: {
           type: "value",
@@ -513,10 +536,19 @@ export default {
           },
         ],
       });
+      window.addEventListener("resize", function () {
+        myChart.resize();
+      });
     },
     login_init() {
       let myChart = this.$echarts.init(document.getElementById("charts1"));
       myChart.setOption({
+        grid: {
+          x: 50,
+          x2: 20,
+          y: 20,
+          y2: 20,
+        },
         xAxis: {
           type: "category",
           boundaryGap: false,
@@ -587,6 +619,12 @@ export default {
             },
           },
         },
+        grid: {
+          x: 50,
+          x2: 20,
+          y: 20,
+          y2: 20,
+        },
         tooltip: {
           trigger: "axis",
           axisPointer: {
@@ -598,7 +636,7 @@ export default {
         },
         series: [
           {
-            data:this.chartsData3,
+            data: this.chartsData3,
             type: "line",
             symbol: "circle",
             lineStyle: {
@@ -620,8 +658,9 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.nextPage{
+.nextPage {
   width: 100px;
+  cursor: pointer;
   right: 150px;
   top: 20px;
   position: absolute;
@@ -636,7 +675,10 @@ export default {
 .leftCharts {
   margin-top: 20px;
   width: 100%;
-  height: 280px;
+  height: 250px;
+}
+.countTitle {
+  font-size: 16px;
 }
 .bg {
   width: 80px;
@@ -654,11 +696,12 @@ export default {
 }
 .home {
   height: 100%;
+  min-width: 1024px;
   width: 100%;
   position: relative;
 }
 .peopleHeight {
-  height: 300px !important;
+  height: 290px !important;
 }
 .bg1 {
   background-color: #fd5353;
@@ -668,6 +711,9 @@ export default {
 }
 .bg3 {
   background-color: #ffc300;
+}
+.rightBoxTitle {
+  font-size: 16px;
 }
 .main {
   width: 100%;
@@ -680,9 +726,9 @@ export default {
     box-sizing: border-box;
     height: 100%;
     // background-color: #fff;
-  
+
     .people {
-      margin-top: 40px;
+      margin-top: 30px;
       width: 100%;
       padding: 10px;
       height: 180px;
@@ -692,6 +738,7 @@ export default {
       text-align: start;
       box-sizing: border-box;
       .people_top {
+        font-size: 16px;
         span {
           font-size: 25px;
           margin-left: 50px;
@@ -700,7 +747,6 @@ export default {
       }
       .people_bot {
         width: 100%;
-        margin-top: 20px;
         border-radius: 10px;
         padding: 30px;
         box-sizing: border-box;
@@ -737,7 +783,7 @@ export default {
       box-sizing: border-box;
       .charts {
         width: 100%;
-        height: 230px;
+        height: 205px;
       }
     }
   }
@@ -756,10 +802,11 @@ export default {
       // background-color: red;
       .countItem {
         display: flex;
-        width: 180px;
+        // width: 180px;
         justify-content: space-between;
         .countBox {
-          width: 100px;
+          margin-left: 20px;
+          // width: 100px;
           padding: 15px 0;
           color: #fff;
           box-sizing: border-box;
@@ -770,6 +817,23 @@ export default {
         }
       }
     }
+  }
+}
+.jiguan {
+  width: 200px;
+  text-align: start;
+  color: #fff;
+  font-size: 14px;
+  position: absolute;
+  left: 500px;
+  top: 278px;
+  .jiguanItem {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    line-height: 30px;
+    height: 30px;
+    line-height: 40px;
   }
 }
 </style>

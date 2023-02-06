@@ -9,7 +9,7 @@ import store from '../store/index'
 if (process.env.NODE_ENV === 'development') {
     axios.defaults.baseURL = '/api'
 } else if (process.env.NODE_ENV === 'production') {
-    axios.defaults.baseURL = '/api'
+    axios.defaults.baseURL = ''
 }
 
 

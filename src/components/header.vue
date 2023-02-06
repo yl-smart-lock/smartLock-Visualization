@@ -46,6 +46,8 @@ export default {
 
 }
 .logout{
+  cursor: pointer;
+
   width: 100px;
   position: absolute;
   right:20px;

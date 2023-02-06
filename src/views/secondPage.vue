@@ -1,7 +1,8 @@
 <template>
   <div>
     <headers msg="流口数据汇总平台" />
-    <div class="nextPage" @click="toPage">下一页</div>
+    <div class="nextPage" @click="toPage1">上一页</div>
+
     <div class="main">
       <div class="left">
         <div class="left_top bg1">
@@ -11,37 +12,37 @@
                 <span class="iconfont icon-fangzi"></span>
               </div>
               <div class="countBox">
-                <div class="countTitle">已安锁房间</div>
-                <div class="count">99</div>
+                <div class="countTitle">出租类型和产权人类型</div>
+                <div class="count">{{ typeCountAll }}</div>
               </div>
             </div>
           </div>
-          <div class="bot_box">
-            <span>已登记房间118间</span>
-          </div>
-          <div class="rate_box bg2">
+          <!-- <div class="bot_box">
+            <span></span>
+          </div> -->
+          <!-- <div class="rate_box bg2">
             <div class="rate_title">安装率 20.3%</div>
 
             <div class="rate">
               <div class="rate_nei"></div>
             </div>
-          </div>
+          </div> -->
           <div class="box">
             <div class="box_item bg2 wh1">
-              <div class="count">20</div>
-              <div class="tit">政府保障性住房</div>
+              <div class="count">{{ all }}</div>
+              <div class="tit">整租</div>
             </div>
             <div class="box_item bg2 wh1">
-              <div class="count">20</div>
-              <div class="tit">村（社区）自建公寓</div>
+              <div class="count">{{ part }}</div>
+              <div class="tit">分租</div>
             </div>
             <div class="box_item bg2 wh1">
-              <div class="count">20</div>
-              <div class="tit">宿舍</div>
+              <div class="count">{{ person }}</div>
+              <div class="tit">个人</div>
             </div>
             <div class="box_item bg2 wh1">
-              <div class="count">20</div>
-              <div class="tit">个人出租房</div>
+              <div class="count">{{ company }}</div>
+              <div class="tit">企业</div>
             </div>
           </div>
         </div>
@@ -57,37 +58,36 @@
                 <span class="iconfont icon-yuechi"></span>
               </div>
               <div class="countBox">
-                <div class="countTitle">在用钥匙</div>
-                <div class="count">99</div>
+                <div class="countTitle">门锁总数</div>
+                <div class="count">{{ rentCount.total_lock }}</div>
               </div>
             </div>
           </div>
           <div class="bot_box">
-            <span>已安装门锁24把</span>
-            <span>今日安装 0</span>
+            <span>已出租门锁总数{{ rentCount.rented_lock }}</span>
           </div>
           <div class="box">
             <div class="box_item bg2 wh2">
-              <div class="count">20</div>
-              <div class="tit">门锁使用率</div>
+              <div class="count">{{ todayCount.today_tenanted_count }}</div>
+              <div class="tit">今日出租数量</div>
             </div>
             <div class="box_item bg2 wh2">
-              <div class="count">20</div>
-              <div class="tit">今日总开门数</div>
+              <div class="count">{{ todayCount.today_untenanted_count }}</div>
+              <div class="tit">今日移除租客数量</div>
             </div>
             <div class="box_item bg2 wh2">
-              <div class="count">20</div>
-              <div class="tit">最新开门时间</div>
+              <div class="count">{{ todayCount.today_unlock_times }}</div>
+              <div class="tit">今日开锁数量</div>
             </div>
             <div class="box_item bg2 wh2">
-              <div class="count">20</div>
-              <div class="tit">今日下发钥匙数</div>
+              <div class="count">{{ todayCount.today_lock_created_count }}</div>
+              <div class="tit">今日门锁创建数量</div>
             </div>
           </div>
         </div>
-        <div class="left_bot bg1 bot_charts">
-          <div class="charts"  id="myChart2"></div>
-          <div class="charts"  id="myChart3"></div>
+        <div class="left_bot bg1 bot_charts" id="myChart2">
+          <!-- <div class="charts" ></div> -->
+          <!-- <div class="charts" id="myChart3"></div> -->
         </div>
       </div>
       <div class="left">
@@ -98,50 +98,42 @@
                 <span class="iconfont icon-yonghuguanli"></span>
               </div>
               <div class="countBox">
-                <div class="countTitle">在住人数</div>
-                <div class="count">99</div>
+                <div class="countTitle">在住出租</div>
+                <div class="count">{{ totalData.tenanted_count }}</div>
               </div>
             </div>
           </div>
           <div class="bot_box">
-            <span>历史总入住人数118人</span>
+            <span>历史出租{{ totalData.history_tenanted_total }}间</span>
             <span>今日入住情况</span>
           </div>
           <div class="box">
             <div class="box_item bg2 wh3">
-              <div class="count">20</div>
+              <div class="count">{{ chartsData1 }}</div>
               <div class="tit">新入住</div>
             </div>
             <div class="box_item bg2 wh3">
-              <div class="count">20</div>
+              <div class="count">{{ chartsData2 }}</div>
               <div class="tit">离开</div>
-            </div>
-            <div class="box_item bg2 wh3">
-              <div class="count">20</div>
-              <div class="tit">住所变动</div>
             </div>
           </div>
         </div>
         <div class="left_bot bg1">
           <div class="bg2 wh4">
             <div class="dot"></div>
-            <div class="text">手机号总数</div>
-            <div class="text1">122</div>
-
+            <div class="text">实人认证一人多手机数量</div>
+            <div class="text1">{{ mobileCount.multi_mobile_user_count }}</div>
           </div>
           <div class="bg2 wh4">
             <div class="dot"></div>
-            <div class="text">一人多少人数</div>
-            <div class="text1">333</div>
-
+            <div class="text">有效实人认证用户人数</div>
+            <div class="text1">{{ mobileCount.user_count }}</div>
           </div>
           <div class="bg2 wh4">
             <div class="dot"></div>
-            <div class="text">单人持有最多手机号</div>
-            <div class="text1">11</div>
-
+            <div class="text">持有手机号最多用户数量</div>
+            <div class="text1">{{ most_mobile_count_per_user }}</div>
           </div>
-
         </div>
       </div>
     </div>
@@ -149,24 +141,100 @@
 </template>
 <script>
 import headers from "@/components/header.vue";
+import {
+  get_type_count,
+  get_rent_count,
+  get_today_count,
+  get_identity_count,
+  get_mobile_count,
+  get_current_data,
+} from "@/api/api";
 
 export default {
   components: {
     headers,
   },
   data() {
-    return {};
+    return {
+      typeCount: "",
+      most_mobile_count_per_user: "",
+      typeCountAll: "",
+      rentCount: "",
+      todayCount: "",
+      all: "",
+      part: "",
+      company: "",
+      person: "",
+      identityCount: "",
+      mobileCount: "",
+      chartsData1: 0,
+      chartsData2: 0,
+      totalData: "",
+    };
   },
   created() {
+    this.chartsData1 = JSON.parse(sessionStorage.getItem("chartsData1"))[5];
+    this.chartsData2 = JSON.parse(sessionStorage.getItem("chartsData2"))[5];
+    console.log(this.chartsData2);
   },
-  mounted(){
-    this.drawLine1();
-    this.drawLine2();
-    this.drawLine3();
+  mounted() {
+    this.getTypeCount();
+    this.getRentCount();
+    this.getTodayCount();
+    this.getIdentityCount();
+    this.getMobileCount();
+    this.getCurrentData();
+    // this.drawLine3();
   },
   methods: {
+    getCurrentData() {
+      get_current_data().then((res) => {
+        this.totalData = res;
+      });
+    },
+    getMobileCount() {
+      get_mobile_count().then((res) => {
+        this.mobileCount = res;
+        this.most_mobile_count_per_user = res.most_mobile_count_per_user.count;
+      });
+    },
+    getIdentityCount() {
+      get_identity_count().then((res) => {
+        this.identityCount = res;
+        this.drawLine2();
+      });
+    },
+    getTodayCount() {
+      get_today_count().then((res) => {
+        this.todayCount = res;
+      });
+    },
+    getRentCount() {
+      get_rent_count().then((res) => {
+        this.rentCount = res;
+        this.drawLine1();
+      });
+    },
+    getTypeCount() {
+      get_type_count().then((res) => {
+        this.typeCount = res;
+        this.typeCountAll =
+          res.owner_type.company +
+          res.owner_type.person +
+          res.rent_type.all +
+          res.rent_type.part;
+        this.all = res.rent_type.all;
+        this.part = res.rent_type.part;
+        this.company = res.owner_type.company;
+        this.person = res.owner_type.person;
+        console.log(res, 111);
+      });
+    },
     toPage() {
-      this.$router.push("/thirdPage");
+      this.$router.push("/forth");
+    },
+    toPage1() {
+      this.$router.go(-1);
     },
     drawLine1() {
       // 基于准备好的dom，初始化echarts实例
@@ -177,7 +245,7 @@ export default {
       let option = {
         title: {
           // 第一个圆环标题
-          text: "长期未出租情况", // 主标题
+          text: "门锁情况", // 主标题
           textStyle: {
             // 主标题样式
             color: "#fff",
@@ -201,7 +269,7 @@ export default {
         },
         legend: {
           orient: "horizontal",
-          padding:[50,0,0,0],
+          padding: [50, 0, 0, 0],
           x: "center",
           y: "top",
           icon: "circle",
@@ -251,40 +319,33 @@ export default {
             },
             data: [
               {
-                value: 8,
+                value: this.rentCount.multi_person_lock,
                 itemStyle: {
                   normal: {
                     // 渐变色操作
                     color: "#8c28f0",
                   },
                 },
-                name: "多人居住",
+                name: "多人门锁",
               },
               {
-                value: 8,
+                value: this.rentCount.single_person_lock,
                 itemStyle: {
                   normal: {
                     // 渐变色操作
                     color: "#479df0",
                   },
                 },
-                name: "单人居住",
-              },
-              {
-                value: 8,
-                itemStyle: {
-                  normal: {
-                    // 渐变色操作
-                    color: "#ee14c9",
-                  },
-                },
-                name: "无人居住",
+                name: "单人门锁",
               },
             ],
           },
         ],
       };
       myChart.setOption(option);
+      window.addEventListener("resize", function () {
+        myChart.resize();
+      });
     },
     drawLine2() {
       // 基于准备好的dom，初始化echarts实例
@@ -319,7 +380,7 @@ export default {
         },
         legend: {
           orient: "horizontal",
-          padding:[50,0,0,0],
+          padding: [50, 0, 0, 0],
           x: "center",
           y: "top",
           icon: "circle",
@@ -369,7 +430,7 @@ export default {
             },
             data: [
               {
-                value: 8,
+                value: this.identityCount.identited_count,
                 itemStyle: {
                   normal: {
                     // 渐变色操作
@@ -379,7 +440,8 @@ export default {
                 name: "已认证",
               },
               {
-                value: 8,
+                value:
+                  this.identityCount.total - this.identityCount.identited_count,
                 itemStyle: {
                   normal: {
                     // 渐变色操作
@@ -393,6 +455,9 @@ export default {
         ],
       };
       myChart.setOption(option);
+      window.addEventListener("resize", function () {
+        myChart.resize();
+      });
     },
     drawLine3() {
       // 基于准备好的dom，初始化echarts实例
@@ -427,7 +492,7 @@ export default {
         },
         legend: {
           orient: "horizontal",
-          padding:[50,0,0,0],
+          padding: [50, 0, 0, 0],
           x: "center",
           y: "top",
           icon: "circle",
@@ -496,18 +561,20 @@ export default {
                 },
                 name: "IC房卡",
               },
-             
             ],
           },
         ],
       };
       myChart.setOption(option);
+      window.addEventListener("resize", function () {
+        myChart.resize();
+      });
     },
   },
 };
 </script>
 <style scoped lang="less">
-.wh4{
+.wh4 {
   width: 100%;
   height: 80px;
   margin-top: 20px;
@@ -515,33 +582,36 @@ export default {
   padding: 20px;
   box-sizing: border-box;
   align-items: center;
-  color: #FFF;
+  color: #fff;
   font-size: 18px;
-  .dot{
+  .dot {
     width: 10px;
     height: 10px;
     background-color: #039ff7;
     border-radius: 10px;
   }
-  .text{
+  .text {
     margin-left: 20px;
     width: 400px;
     text-align: start;
   }
-  .text1{
+  .text1 {
     text-align: start;
     // margin-left: 200px;
   }
 }
-.bot_charts{
+.bot_charts {
   display: flex;
   justify-content: space-between;
-  .charts{
+  .charts {
     width: 50%;
     height: 300px;
   }
 }
-.leftCharts{
+.rightw {
+  right: 280px !important;
+}
+.leftCharts {
   width: 100%;
   margin-top: 20px;
   height: 300px;
@@ -566,13 +636,14 @@ export default {
     padding: 25px;
     box-sizing: border-box;
     .count {
+      margin-top: 20px;
       font-size: 20px;
     }
   }
 }
 .wh1 {
-  width: 250px;
-  height: 100px;
+  width: 240px;
+  height: 155px;
 }
 .wh2 {
   width: 280px;
@@ -582,7 +653,7 @@ export default {
   }
 }
 .wh3 {
-  width: 250px;
+  width: 240px;
   height: 138px;
   div {
     margin-top: 15px;
@@ -622,6 +693,9 @@ export default {
     }
   }
 }
+.countTitle {
+  font-size: 16px;
+}
 .bg {
   width: 60px;
   border-radius: 10px;
@@ -640,10 +714,10 @@ export default {
 .top_box {
   .countItem {
     display: flex;
-    width: 180px;
+    // width: 0px;
     justify-content: space-between;
     .countBox {
-      width: 100px;
+      width: 600px;
       padding: 5px 0;
       color: #fff;
       box-sizing: border-box;
@@ -692,6 +766,7 @@ export default {
   }
 }
 .nextPage {
+  cursor: pointer;
   width: 100px;
   right: 150px;
   top: 20px;
