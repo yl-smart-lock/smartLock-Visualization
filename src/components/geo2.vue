@@ -1,11 +1,17 @@
 <style scoped lang="less">
 .box {
   width: 100%;
-  height: 100%;
+  height: 495px;
+  background-image: url(../assets/img/mapbg.png);
+  background-size: 100% 100%;
   position: relative;
+  flex-direction: column-reverse;
+  align-items: center;
+  display: flex;
+
   .geos {
-    width: 100%;
-    height: 100%;
+    width: 518px;
+    height: 495px;
   }
 }
 .top {
@@ -17,6 +23,7 @@
 .maptitle {
   font-size: 30px;
 }
+
 .back {
   font-size: 16px;
   cursor: pointer;
@@ -37,7 +44,7 @@
 </style>
 <template>
   <div class="box">
-    <el-select v-model="value" placeholder="请选择" @change="mapChange">
+    <!-- <el-select v-model="value" placeholder="请选择" @change="mapChange">
       <el-option
         v-for="item in options"
         :key="item.value"
@@ -51,7 +58,7 @@
       <div class="back" @click="back" v-if="mapTitle != '眉山市'">
         返回上一级
       </div>
-    </div>
+    </div> -->
     <div id="map" class="geos"></div>
   </div>
 </template>
@@ -70,13 +77,8 @@ function fontSize(res) {
   return res * fontSize;
 }
 
-const renshouMapMoudle = require("@/libs/renshou.js");
-const renshouMap = renshouMapMoudle.renshouMap;
-
-const guangyuanMapMoudle = require("@/libs/guangyuan.js");
-const guangyuanMap = guangyuanMapMoudle.guangyuanMap;
-const meishanMapMoudle = require("@/libs/meishan.js");
-const meishanMap = meishanMapMoudle.meishanMap;
+const yuhangMapMoudle = require("@/libs/yuhangMap.js");
+const yuhangMap = yuhangMapMoudle.yuhangMap;
 
 // const schoolListMoudle = require("@/libs/schoolList.js");
 // const schoolList = schoolListMoudle.schoolList;
@@ -84,8 +86,8 @@ const meishanMap = meishanMapMoudle.meishanMap;
 // console.log(schoolList, "schoolListschoolListschoolList");
 const getStreetGeoJson = function (name) {
   var item;
-  for (var i in meishanMap.features) {
-    item = meishanMap.features[i];
+  for (var i in yuhangMap.features) {
+    item = yuhangMap.features[i];
     if (item.properties.name == name) {
       break;
     }
@@ -692,6 +694,8 @@ export default {
   },
   created() {},
   mounted: function () {
+    this.initGeo();
+
     // this.getUserInfo();
     // let index = schoolList.findIndex((item) => {
     //   return item.name == this.schoolname;
@@ -714,7 +718,6 @@ export default {
         } else if (!res.tag) {
           this.value = 1;
         }
-        this.initGeo();
       });
     },
     mapChange() {
@@ -732,13 +735,17 @@ export default {
       if (this.myChart) {
         this.myChart.dispose();
       }
+
       this.myChart = this.$echarts.init(document.getElementById("map"));
       if (this.value == 1) {
-        this.$echarts.registerMap("jiangshan", geojson ? geojson : meishanMap);
+        console.log("111");
+
+        this.$echarts.registerMap("jiangshan", geojson ? geojson : yuhangMap);
+
         this.reginData = this.reginData3;
-        this.mapTitle = '眉山市'
+        this.mapTitle = "眉山市";
       } else {
-        this.mapTitle = '仁寿县'
+        this.mapTitle = "仁寿县";
         this.$echarts.registerMap("jiangshan", geojson ? geojson : renshouMap);
         this.reginData = this.reginData2;
       }
@@ -753,10 +760,46 @@ export default {
       // }
       // console.log(schoolList_tmp, "schoolList_tmp");
 
+   var geoCoordMap={
+    '径山书院':[119.818659,30.351002],
+    '研学旅行基地':[ 119.974216,30.400545],
+    '麟海农学体验基地':[ 120.047543,30.421157],
+   }
+   var data = [
+   { name: '径山书院', value: 9 },
+   { name: '研学旅行基地', value: 10 },
+   { name: '麟海农学体验基地', value: 29 },
+
+   ]
+      var convertData = function (data) {
+        var res = [];
+        for (var i = 0; i < data.length; i++) {
+            var geoCoord = geoCoordMap[data[i].name];
+            if (geoCoord) {
+                res.push({
+                    name: data[i].name,
+                    value: geoCoord.concat(data[i].value)
+                });
+            }
+        }
+        return res;
+    };
       var option = {
+        title: {
+          text: "乐研学资源地图",
+          // subtext:'',
+          x: "center",
+          y: "px",
+          textStyle: {
+            color: "#fff",
+            fontSize: 14,
+          },
+          textAlign: "left",
+        },
         series: [
           {
             // name: "地点",
+            data: convertData(data),
             type: "effectScatter",
             coordinateSystem: "geo",
             // zlevel: 2,
@@ -770,7 +813,7 @@ export default {
             showEffectOn: "emphasis",
             itemStyle: {
               normal: {
-                color: "green",
+                color: "rgba(244,233,37,0.4)",
               },
             },
             showEffectOn: "render",
@@ -780,6 +823,8 @@ export default {
               brushType: "fill", //stroke(涟漪)和fill(扩散)，两种效果
               scale: 10, //波纹范围
             },
+          
+            
             // data: schoolList_tmp.map((i) => {
             //   return {
             //     name: i.name,
@@ -815,6 +860,43 @@ export default {
             //   };
             // }),
           },
+         {
+          name: '回收中心',
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                data: convertData(data.sort(function (a, b) {
+                    return b.value - a.value;
+                }).slice(0,18)),//这里的0，13是水波纹显示的前几个
+                symbolSize: function (val) {
+                    return val[2] / 10;
+                },
+                encode: {
+                    value: 2
+                },
+                showEffectOn: 'render',
+                rippleEffect: {
+                    brushType: 'stroke'
+                },
+                hoverAnimation: true,
+                label: {
+                    formatter: '{b}',
+                    position: 'right',
+                    show: true,
+                    color:'#fff',
+                    fontWeight:700
+                },
+                itemStyle: {
+                        color: '#f4e925',
+                        shadowBlur: 10,
+                        shadowColor: '#333'
+                    },
+                // 悬浮出现的框
+                tooltip:{
+                        formatter: '{b}'+ '回收中心'
+                    },
+                zlevel: 1
+            }
+
         ],
         // toolbox: {
         //   //echart保存为图片
@@ -838,15 +920,16 @@ export default {
 
         geo: {
           map: "jiangshan",
-          label: {
-            normal: {
-              color: "rgba(255,255,255,1)",
-              formatter: (params) => {
-                // console.log(params, "67890");
-              },
-              show: true,
-            },
-          },
+          // label: {
+          //   normal: {
+          //     color: "rgba(255,255,255,1)",
+          //     formatter: (params) => {
+          //       // console.log(params, "67890");
+          //       console.log(window.frames.location.href, 1112);
+          //     },
+          //     show: true,
+          //   },
+          // },
           itemStyle: {
             normal: {
               color: "rgba(0,0,0,0)",
@@ -859,10 +942,10 @@ export default {
           roam: false, //鼠标滚轮缩放
           itemStyle: {
             normal: {
-              // shadowColor: "rgba(20,68,191,0.5)",
-              // shadowOffsetX: 0,
-              // shadowOffsetY: 15,
-              borderWidth: 1,
+              shadowColor: "rgba(20,68,191,0.5)",
+              shadowOffsetX: 0,
+              shadowOffsetY: 15,
+              borderWidth: 0,
               borderColor: "#3199A0", //区域边框色
               areaColor: "#0045FF", //区域背景色
               label: {
@@ -872,10 +955,7 @@ export default {
                   fontSize: fontSize(0.12),
                 },
               },
-              formatter: (params) => {
-                console.log(window.frames.location.href, 1112);
-                // console.log(params, "67890");
-              }, //文字大小
+              formatter: (params) => {}, //文字大小
             },
 
             emphasis: {
@@ -895,7 +975,106 @@ export default {
               },
             },
           },
-          regions: this.reginData,
+          regions: [
+            //对不同的区块进行着色
+            {
+              name: "百丈镇", //区块名称
+              itemStyle: {
+                normal: {
+                  areaColor: "#517ff4",
+                },
+              },
+            },
+            {
+              name: "鸬鸟镇", //区块名称
+              itemStyle: {
+                normal: {
+                  areaColor: "#b3e6ee",
+                },
+              },
+            },
+            {
+              name: "黄湖镇", //区块名称
+              itemStyle: {
+                normal: {
+                  areaColor: "#7faff6",
+                },
+              },
+            },
+            {
+              name: "径山镇", //区块名称
+              itemStyle: {
+                normal: {
+                  areaColor: "#517ff4",
+                },
+              },
+            },
+            {
+              name: "瓶窑镇", //区块名称
+              itemStyle: {
+                normal: {
+                  areaColor: "#b3e6ee",
+                },
+              },
+            },
+            {
+              name: "余杭街道", //区块名称
+              itemStyle: {
+                normal: {
+                  areaColor: "#b3e6ee",
+                },
+              },
+            },
+            {
+              name: "仓前街道", //区块名称
+              itemStyle: {
+                normal: {
+                  areaColor: "#7faff6",
+                },
+              },
+            },
+            {
+              name: "良渚街道", //区块名称
+              itemStyle: {
+                normal: {
+                  areaColor: "#517ff4",
+                },
+              },
+            },
+            {
+              name: "仁和街道", //区块名称
+              itemStyle: {
+                normal: {
+                  areaColor: "#7faff6",
+                },
+              },
+            },
+
+            {
+              name: "五常街道", //区块名称
+              itemStyle: {
+                normal: {
+                  areaColor: "#517ff4",
+                },
+              },
+            },
+            {
+              name: "闲林街道", //区块名称
+              itemStyle: {
+                normal: {
+                  areaColor: "#b3e6ee",
+                },
+              },
+            },
+            {
+              name: "中泰街道", //区块名称
+              itemStyle: {
+                normal: {
+                  areaColor: "#7faff6",
+                },
+              },
+            },
+          ],
         },
       };
       this.myChart.setOption(option);

@@ -49,7 +49,8 @@ axios.interceptors.response.use(response => {
 export function httpGet(url, data) {
     return new Promise((resolve, reject) => {
         axios.get(url).then((res) => {
-            resolve(res.data)
+            console.log(res,'0099')
+            resolve(res.results)
         }).catch(err => {
             reject(err)
         })
@@ -81,7 +82,7 @@ export function httpDelete(
 
 // post请求
 export function httpPost(url, data) {
-    console.log(url, '888')
+    console.log(data, '888')
     return new Promise((resolve) => {
         axios({
             url,

@@ -12,6 +12,7 @@
     "core-js": "^3.6.4",
     "countup.js": "^2.2.0",
     "echarts": "^4.9.0",
+    "echarts-liquidfill": "^2.0.6",
     "element-ui": "^2.13.0",
     "postcss-px2rem-exclude": "0.0.6",
     "px2rem-loader": "^0.1.9",

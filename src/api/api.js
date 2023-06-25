@@ -7,32 +7,37 @@ import {
 } from '../axios/index.js'
 
 
-export const get_lock_list= p => httpGet(`/api/v1/management/lock/lock/?page_size=99`);
-export const get_user_info = p => httpGet(`/api/v1/user/info/`);
+export const login = p => httpPost(`/api/v1/user/user-login`,p);
+export const get_jiedui = p => httpGet(`/api/v1/online/`);
+export const get_tutoring = p => httpGet(`/api/v1/tutoring/`);
+export const get_topic_new = p => httpGet(`/api/v1/topic_new/`);
+export const get_src_sum = p => httpGet(`/api/v1/src-sum/`);
+export const get_agency_reports= p => httpGet(`/api/v1/agency_reports/`);
+export const get_contact_list= p => httpGet(`/api/v1/contact_list/`);
+export const get_star_level= p => httpGet(`/api/v1/star_level/`);
+export const get_task_time= p => httpGet(`/api/v1/task_time/`);
+export const get_src_view= p => httpGet(`/api/v1/src-view/`);
+
+export const get_src_dl= p => httpGet(`/api/v1/src-dl/`);
+
+export const get_activity= p => httpGet(`/api/v1/activity/`);
+export const get_agency= p => httpGet(`/api/v1/agency/`);
+export const get_agency_type= p => httpGet(`/api/v1/agency_type/`);
+
+export const get_reports_add= p => httpGet(`/api/v1/reports_add/`);
+
+export const get_reports_total= p => httpGet(`/api/v1/reports_total/`);
+
+export const get_reports_latest= p => httpGet(`/api/v1/reports_latest/`);
+export const get_visitors= p => httpGet(`/api/v1/visitors/`);
+export const get_visitors_day= p => httpGet(`/api/v1/visitors-day/`);
+
+export const get_contact_rank =  p => httpGet(`/api/v1/contact_rank/`);
+
+export const get_task_visitors_day =  p => httpGet(`/api/v1/task-visitors-day/`);
+export const get_task_visitors =  p => httpGet(`/api/v1/task-visitors/`);
+export const get_reports_num =  p => httpGet(`/api/v1/reports_num/`);
 
 
-export const login = p => httpPost(`/api/v1/user/login/`, p);
-export const login_out = p => httpGet(`/api/v1/user/login/`);
 
 
-
-export const get_type_count = p => httpGet(`/api/v1/management/lock/lock/type-count/`);
-export const get_rent_count = p => httpGet(`/api/v1/management/lock/lock/rent-count/`);
-export const get_today_count = p => httpGet(`/api/v1/management/lock/lock/today-count/`);
-
-export const get_identity_count = p => httpGet(`/api/v1/management/user/identity-count/`);
-
-export const get_mobile_count = p => httpGet(`/api/v1/management/user/multi-mobile-count/`);
-
-
-// 账号相关接口
-export const get_zone_conf = p => httpGet(`/api/v1/management/user/zone-conf/`);
-export const get_zone_data = p => httpGet(`/api/v1/management/user/zone-data/`);
-
-export const get_chart_data = p => httpGet(`/api/v1/management/lock/lock/chart-data/`);
-export const get_lock_data = p => httpGet(`/api/v1/management/lock/lock/`);
-
-
-export const get_current_data = p => httpGet(`/api/v1/management/lock/lock/current-data/`);
-export const set_teacher_kind = p => httpPut(`/api/v1/user/teacher/set_teacher_kind/`, p);
-export const teacher_bind_class = p => httpPost(`/api/v1/user/teacher/bind_clazz/`, p);

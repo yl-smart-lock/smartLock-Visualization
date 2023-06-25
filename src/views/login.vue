@@ -1,7 +1,7 @@
 <template>
   <div class="login-wrap">
     <div class="ms-login">
-      <div class="ms-title">流口全域管理数据驾驶舱</div>
+      <div class="ms-title"></div>
       <el-form
         :model="param"
         :rules="rules"

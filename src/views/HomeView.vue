@@ -1,669 +1,291 @@
 <template>
-  <div class="home">
-    <headers msg="流口全域管理数据驾驶舱" />
-    <div class="nextPage" @click="toPage">下一页</div>
-    <div class="jiguan">
-      <div class="jiguanItem">籍贯分布</div>
-      <div class="jiguanItem" v-for="(item, index) in zoneData" :key="index">
-        <span v-if="item.zone"> {{ item.zone }}:</span>
-        <span v-else>未实人认证：</span><span>{{ item.count }}</span>
+  <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
+    <div class="headers">
+      <div class="tab">
+        <div
+          @click="tabClick(index, item.path, item.type)"
+          class="tabItem"
+          :class="active == index + 1 ? 'active' : ''"
+          v-for="(item, index) in tabList"
+          :key="index"
+        >
+          {{ item.name }}
+        </div>
+      </div>
+      <div class="title">余杭区乐学吧数字智治驾驶舱</div>
+      <div class="banben">
+        <el-select v-model="version" @change="versionChange" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </div>
+      <div class="date">
+        <div class="time">
+          <div class="time_left">
+            <div class="dates">{{ timeArry.timeDate }}</div>
+            <div>{{ timeArry.week }}</div>
+          </div>
+          <div class="time_right">
+            {{ timeArry.timeText }}
+          </div>
+        </div>
+        <div class="user">
+          <img src="../assets/img/img_1.png" alt="" />
+          系统管理员
+        </div>
       </div>
     </div>
-    <div class="main">
-      <div class="left">
-        <div class="people">
-          <div class="people_top">
-            在住总人数 <span>{{ totalData.tenanted_count }}</span>
-          </div>
-          <div class="people_bot">
-            <div>
-              <div class="tit">今日离开</div>
-              <div class="count">{{ totalData.today_untenanted_count }}</div>
-            </div>
-            <div>
-              <div class="tit">今日入住</div>
-              <div class="count">{{ totalData.today_tenanted_count }}</div>
-            </div>
-          </div>
-        </div>
-        <div class="people peopleHeight">
-          <div class="people_top">近15 45天出租数量</div>
-          <div class="leftCharts" id="myChart"></div>
-        </div>
-        <div class="people peopleHeight">
-          <div class="people_top">近一、二周、三十天开锁数量</div>
-          <div class="leftCharts" id="myChart1"></div>
-        </div>
-      </div>
-      <div class="center">
-        <div class="centerCount">
-          <div class="countItem">
-            <div class="bg bg1">
-              <span class="iconfont icon-xinyonghu"></span>
-            </div>
-            <div class="countBox">
-              <div class="countTitle">登记房屋总数</div>
-              <div class="count">{{ totalData.total_count }}</div>
-            </div>
-          </div>
-          <div class="countItem">
-            <div class="bg bg2">
-              <span class="iconfont icon-rili"></span>
-            </div>
-            <div class="countBox">
-              <div class="countTitle">空置房屋</div>
-              <div class="count">
-                {{
-                  totalData.total_count - totalData.current_lock_tenanted_count
-                }}
-              </div>
-            </div>
-          </div>
-          <div class="countItem">
-            <div class="bg bg3">
-              <span class="iconfont icon-yonghuguanli"></span>
-            </div>
-            <div class="countBox">
-              <div class="countTitle">在住房屋</div>
-              <div class="count">
-                {{ totalData.current_lock_tenanted_count }}
-              </div>
-            </div>
-          </div>
-        </div>
-        <Geo id="china_map" :render_random="geo_render_random"></Geo>
-      </div>
-      <div class="right">
-        <div class="rightBox">
-          <div class="rightBoxTitle">近期入住趋势</div>
-          <div class="charts" id="charts1"></div>
-        </div>
-        <div class="rightBox">
-          <div class="rightBoxTitle">近期新入住与离开</div>
-          <div class="charts" id="charts2"></div>
-        </div>
-        <div class="rightBox">
-          <div class="rightBoxTitle">近期开门行为情况</div>
-          <div class="charts" id="charts3"></div>
-        </div>
-      </div>
+    <router-view class="view" v-if="type == 1" />
+    <div v-else style="flex: 1">
+      <iframe
+        :src="pageUrl"
+        allowtransparency="true"
+        frameborder="0"
+        width="100%"
+        height="100%"
+        scrolling="no"
+      ></iframe>
     </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import headers from "@/components/header.vue";
-// import 'echarts/map/js/china.js'
-import Geo from "@/components/geo";
-import {
-  get_chart_data,
-  get_current_data,
-  get_lock_data,
-  get_zone_conf,
-  get_zone_data,
-} from "@/api/api";
+import drawMixin from "../utils/drawMixin";
 
-function objSort(obj) {
-  let newkey = Object.keys(obj).sort();
-  let newObj = {};
-  for (let i = 0; i < newkey.length; i++) {
-    newObj[newkey[i]] = obj[newkey[i]];
-  }
-  return newObj;
-}
+import { formatDate } from "@/utils/index2";
 
 export default {
-  name: "HomeView",
-  components: {
-    headers,
-    Geo,
-  },
+  mixins: [drawMixin],
+  name: "",
   data() {
     return {
-      geo_render_random: Math.random(),
-      totalData: "",
-      dateArray: [],
-      chartsData1: [],
-      chartsData2: [],
-      chartsData3: [],
-      chartsData4: [],
-      zoneData: [],
+      options: [
+        {
+          value: '1',
+          label: "V1.0",
+        },
+        {
+          value: '2',
+          label: "V2.0",
+        },
+      ],
+      version: sessionStorage.getItem('version')?sessionStorage.getItem('version'):'1',
+      nowDate: "",
+      pageUrl: "",
+      timeArry: "",
+      active: sessionStorage.getItem("tabIndex")
+        ? sessionStorage.getItem("tabIndex")
+        : 1,
+      type:1,
+      tabList:[],
+      tabList1: [
+        {
+          name: "首页",
+          path: "/index",
+          type: 1,
+        },
+        {
+          name: "乐作业",
+          path: "/lezuoye",
+          type: 1,
+        },
+        {
+          name: "乐研学",
+          path: "/leyanxue",
+          type: 1,
+        },
+        {
+          name: "乐云校",
+          path: "https://datav.aliyuncs.com/share/c7f66bfa7cc0e75efee92a4ab207991b",
+          type: 2,
+        },
+        {
+          name: "乐托服",
+          path: "https://guanli-yuhang.h5.haoduo.vip/guanli-web/yhview?token=",
+          type: 3,
+        },
+        {
+          name: "乐学吧",
+          path: "https://lxb.eyh.cn:9550/admin",
+          type: 4,
+        },
+      ],
+      tabList2: [
+        {
+          name: "首页",
+          path: "/index",
+          type: 1,
+        },
+        {
+          name: "乐作业",
+          path: "/lezuoye1",
+          type: 1,
+        },
+        {
+          name: "乐研学",
+          path: "/leyanxue1",
+          type: 1,
+        },
+        {
+          name: "乐云校",
+          path: "https://datav.aliyuncs.com/share/c7f66bfa7cc0e75efee92a4ab207991b",
+          type: 2,
+        },
+        {
+          name: "乐托服",
+          path: "https://guanli-yuhang.h5.haoduo.vip/guanli-web/yhview?token=",
+          type: 3,
+        },
+        {
+          name: "乐学吧",
+          path: "https://lxb.eyh.cn:9550/admin",
+          type: 4,
+        },
+      ],
     };
   },
-  mounted() {
-    this.getData();
-    this.getCurrentData();
-    this.getLockData();
-    this.getZoneConf();
-    this.getZoneData();
+  components: {},
+  created() {
+    if(this.version=='1'){
+      this.tabList = this.tabList1
+
+    }else if(this.version=='2'){
+      this.tabList = this.tabList2
+    }
+
+    this.timeArry = formatDate(new Date());
+    this.timeStart();
   },
   methods: {
-    toPage() {
-      this.$router.push("/secondPage");
-    },
-    getZoneConf() {
-      get_zone_conf().then((res) => {
-        console.log(res, "777");
-      });
-    },
-    getZoneData() {
-      get_zone_data().then((res) => {
-        this.zoneData = res;
-        console.log(res, "777");
-      });
-    },
-    getLockData() {
-      get_lock_data().then((res) => {
-        console.log(res, "444");
-      });
-    },
-    getData() {
-      get_chart_data().then((res) => {
-        for (let item in objSort(res)) {
-          console.log(item, "555");
-          this.dateArray.push(item);
-        }
-        this.dateArray.forEach((item) => {
-          console.log(res[item], "456");
-          res[item].forEach((its) => {
-            let index = its.findIndex((itm) => {
-              return itm.handle_type == 3;
-            });
-            if (index != -1) {
-              this.chartsData1.push(its[index].count);
-            } else {
-              this.chartsData1.push(0);
-            }
+    versionChange(){
+      this.type = 1
+      if(this.version==1){
+      this.tabList = this.tabList1
+      sessionStorage.setItem('version',1)
+      
+    }else if(this.version==2){
+      this.tabList = this.tabList2
+      sessionStorage.setItem('version',2)
+    }
+    sessionStorage.setItem("tabIndex",1) 
+    this.active = 1
+    this.$router.push('/index')
 
-            let index1 = its.findIndex((itm) => {
-              return itm.handle_type == 4;
-            });
-            if (index1 != -1) {
-              this.chartsData2.push(its[index1].count);
-            } else {
-              this.chartsData2.push(0);
-            }
 
-            let index2 = its.findIndex((itm) => {
-              return itm.handle_type == 2;
-            });
-            if (index2 != -1) {
-              this.chartsData3.push(its[index2].count);
-            } else {
-              this.chartsData3.push(0);
-            }
-          });
-        });
-        this.login_init();
-        this.login_init1();
-        this.login_init2();
-        sessionStorage.setItem("chartsData1", JSON.stringify(this.chartsData1));
-        sessionStorage.setItem("chartsData2", JSON.stringify(this.chartsData2));
-        console.log(this.chartsData1, "222");
+    },
+    tabClick(index, path, type) {
+      sessionStorage.setItem("tabIndex", index + 1);
+      this.active = index + 1;
+      this.type = type;
+      // sessionStorage.setItem('type')
+      if (type == 1) {
+        this.$router.push(path);
+      } else if (type == 2) {
+        this.pageUrl = path;
+      } else if (type == 3) {
+        this.pageUrl = path + sessionStorage.getItem("token");
+      } else if (type == 4) {
+        sessionStorage.setItem("tabIndex",  1);
+        window.location.href = path;
+      }
+    },
+    loginOut() {
+      login_out().then((res) => {
+        this.$router.push("/login");
       });
     },
-    getCurrentData() {
-      get_current_data().then((res) => {
-        this.totalData = res;
-        this.drawLine();
-        this.drawLine1();
-        console.log(res, "333");
-      });
-    },
-
-    drawLine() {
-      // 基于准备好的dom，初始化echarts实例
-      let myChart = this.$echarts.init(document.getElementById("myChart"));
-      // 绘制图表
-      // 环状半圆形饼图
-      // 总量
-      let option = {
-        title: {
-          // 第一个圆环标题
-          text: this.totalData.tenanted_schema.fourty_five_days + "间", // 主标题
-          textStyle: {
-            // 主标题样式
-            color: "#fff",
-            fontWeight: "bold",
-            fontSize: 20,
-          },
-          left: "50%", // 定位到适合的位置
-          top: "40%", // 定位到适合的位置
-          subtextStyle: {
-            // 副标题样式
-            color: "red",
-            fontSize: 13,
-            fontWeight: "bold",
-          },
-          textAlign: "center", // 主、副标题水平居中显示
-        },
-        tooltip: {
-          show: true,
-          trigger: "item",
-          formatter: "{b}: {c} ({d}%)",
-        },
-        legend: {
-          orient: "horizontal",
-          x: "center",
-          y: "top",
-          icon: "circle",
-          itemHeight: 5,
-          tooltip: {
-            trigger: "item",
-            position: "top",
-          },
-          textStyle: {
-            fontSize: 14, //字体大小
-            color: "#ffffff", //字体颜色
-          },
-        },
-        series: [
-          {
-            startAngle: 0, // 饼图的角度
-            hoverAnimation: false, // 取消饼图放大效果
-            name: "访问来源",
-            type: "pie",
-            radius: ["50%", "70%"],
-            avoidLabelOverlap: false,
-            label: {
-              show: true,
-              position: "inner", // 数据会显示在图形上，'center':会显示在圆环的内部
-              color: "#fff",
-              fontSize: 20,
-              formatter: "{c}", // 显示的数据
-            },
-            // emphasis: {
-            //   label: {
-            //     show: false,
-            //     fontSize: "30",
-            //     fontWeight: "bold",
-            //   },
-            // },
-            lableLine: {
-              normal: {
-                show: false,
-              },
-              emphasis: {
-                show: true,
-              },
-              tooltip: {
-                show: true,
-              },
-            },
-            data: [
-              {
-                value: this.totalData.tenanted_schema.thirty_days,
-                itemStyle: {
-                  normal: {
-                    // 渐变色操作
-                    color: "#8c28f0",
-                  },
-                },
-                name: "0-30天",
-              },
-              {
-                value:
-                  this.totalData.tenanted_schema.fourty_five_days -
-                  this.totalData.tenanted_schema.thirty_days,
-                itemStyle: {
-                  normal: {
-                    // 渐变色操作
-                    color: "#479df0",
-                  },
-                },
-                name: "31-45天",
-              },
-            ],
-          },
-        ],
-      };
-      myChart.setOption(option);
-      window.addEventListener("resize", function () {
-        myChart.resize();
-      });
-    },
-    drawLine1() {
-      // 基于准备好的dom，初始化echarts实例
-      let myChart = this.$echarts.init(document.getElementById("myChart1"));
-      // 绘制图表
-      // 环状半圆形饼图
-      // 总量
-      let option = {
-        title: {
-          // 第一个圆环标题
-          text: this.totalData.unlock_times.thrity_days + "次", // 主标题
-          textStyle: {
-            // 主标题样式
-            color: "#fff",
-            fontWeight: "bold",
-            fontSize: 20,
-          },
-          left: "50%", // 定位到适合的位置
-          top: "40%", // 定位到适合的位置
-          subtextStyle: {
-            // 副标题样式
-            color: "red",
-            fontSize: 13,
-            fontWeight: "bold",
-          },
-          textAlign: "center", // 主、副标题水平居中显示
-        },
-        tooltip: {
-          show: true,
-          trigger: "item",
-          formatter: "{b}: {c} ({d}%)",
-        },
-        legend: {
-          orient: "horizontal",
-          x: "center",
-          y: "top",
-          icon: "circle",
-          itemHeight: 5,
-          tooltip: {
-            trigger: "item",
-            position: "top",
-          },
-          textStyle: {
-            fontSize: 14, //字体大小
-            color: "#ffffff", //字体颜色
-          },
-        },
-        series: [
-          {
-            startAngle: 0, // 饼图的角度
-            hoverAnimation: false, // 取消饼图放大效果
-            name: "访问来源",
-            type: "pie",
-            radius: ["50%", "70%"],
-            avoidLabelOverlap: false,
-            label: {
-              show: true,
-              position: "inner", // 数据会显示在图形上，'center':会显示在圆环的内部
-              color: "#fff",
-              fontSize: 20,
-              formatter: "{c}", // 显示的数据
-            },
-            // emphasis: {
-            //   label: {
-            //     show: false,
-            //     fontSize: "30",
-            //     fontWeight: "bold",
-            //   },
-            // },
-            lableLine: {
-              normal: {
-                show: false,
-              },
-              emphasis: {
-                show: true,
-              },
-              tooltip: {
-                show: true,
-              },
-            },
-            data: [
-              {
-                value: this.totalData.unlock_times.thrity_days,
-                itemStyle: {
-                  normal: {
-                    // 渐变色操作
-                    color: "#8c28f0",
-                  },
-                },
-                name: "一周",
-              },
-              {
-                value:
-                  this.totalData.unlock_times.two_week -
-                  this.totalData.unlock_times.week,
-                itemStyle: {
-                  normal: {
-                    // 渐变色操作
-                    color: "#479df0",
-                  },
-                },
-                name: "两周",
-              },
-              {
-                value:
-                  this.totalData.unlock_times.thrity_days -
-                  this.totalData.unlock_times.two_week,
-                itemStyle: {
-                  normal: {
-                    // 渐变色操作
-                    color: "#ee14c9",
-                  },
-                },
-                name: "三十天",
-              },
-            ],
-          },
-        ],
-      };
-      myChart.setOption(option);
-      window.addEventListener("resize", function () {
-        myChart.resize();
-      });
-    },
-    login_init1() {
-      let myChart = this.$echarts.init(document.getElementById("charts2"));
-      myChart.setOption({
-        legend: {
-          x: "center",
-          y: "top",
-          icon: "circle",
-          itemHeight: 5,
-          data: ["新入住", "离开"],
-          textStyle: {
-            fontSize: 14, //字体大小
-            color: "#ffffff", //字体颜色
-          },
-        },
-        grid: {
-          x: 43,
-          x2: 20,
-          y: 30,
-          y2: 20,
-        },
-        xAxis: {
-          type: "value",
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: "#fff",
-              width: 0,
-              type: "solid",
-            },
-          },
-          axisLabel: {
-            //y轴文字的配置
-            textStyle: {
-              color: "#fff",
-              margin: 15,
-            },
-          },
-        },
-        yAxis: {
-          type: "category",
-          name: "日期",
-          nameTextStyle: {
-            //y轴上方单位的颜色
-            color: "#fff",
-          },
-          axisLine: {
-            //y轴线的颜色以及宽度
-            show: false,
-            lineStyle: {
-              color: "#fff",
-              width: 1,
-              type: "solid",
-            },
-          },
-          data: this.dateArray,
-          axisLabel: {
-            //y轴文字的配置
-            textStyle: {
-              color: "#fff",
-              margin: 15,
-            },
-          },
-        },
-        series: [
-          {
-            data: this.chartsData1,
-            type: "bar",
-            name: "新入住",
-            barWidth: 5,
-            itemStyle: {
-              normal: {
-                barBorderRadius: 5,
-                color: "#991bfa",
-              },
-            },
-          },
-          {
-            data: this.chartsData2,
-            name: "离开",
-            type: "bar",
-            barWidth: 5,
-            itemStyle: {
-              normal: {
-                barBorderRadius: 5,
-                color: "#f9c74f",
-              },
-            },
-          },
-        ],
-      });
-      window.addEventListener("resize", function () {
-        myChart.resize();
-      });
-    },
-    login_init() {
-      let myChart = this.$echarts.init(document.getElementById("charts1"));
-      myChart.setOption({
-        grid: {
-          x: 50,
-          x2: 20,
-          y: 20,
-          y2: 20,
-        },
-        xAxis: {
-          type: "category",
-          boundaryGap: false,
-          axisLine: {
-            lineStyle: {
-              color: "#fff",
-              width: 1, //这里是为了突出显示加上的
-            },
-          },
-          data: this.dateArray,
-        },
-        yAxis: {
-          type: "value",
-          axisLine: {
-            lineStyle: {
-              color: "#fff",
-              width: 1, //这里是为了突出显示加上的
-            },
-          },
-        },
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "cross",
-            label: {
-              backgroundColor: "#6a7985",
-            },
-          },
-        },
-        series: [
-          {
-            data: this.chartsData1,
-            type: "line",
-            smooth: true,
-            lineStyle: {
-              color: "#7a19ca",
-            },
-            areaStyle: {
-              color: ["#2f1554"],
-            },
-          },
-        ],
-      });
-      window.addEventListener("resize", function () {
-        myChart.resize();
-      });
-    },
-    login_init2() {
-      let myChart = this.$echarts.init(document.getElementById("charts3"));
-      myChart.setOption({
-        xAxis: {
-          type: "category",
-          boundaryGap: false,
-          axisLine: {
-            lineStyle: {
-              color: "#fff",
-              width: 1, //这里是为了突出显示加上的
-            },
-          },
-          data: this.dateArray,
-        },
-        yAxis: {
-          type: "value",
-          axisLine: {
-            lineStyle: {
-              color: "#fff",
-              width: 1, //这里是为了突出显示加上的
-            },
-          },
-        },
-        grid: {
-          x: 50,
-          x2: 20,
-          y: 20,
-          y2: 20,
-        },
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "cross",
-            label: {
-              backgroundColor: "#6a7985",
-            },
-          },
-        },
-        series: [
-          {
-            data: this.chartsData3,
-            type: "line",
-            symbol: "circle",
-            lineStyle: {
-              color: "#01f1e3",
-            },
-            itemStyle: {
-              normal: {
-                color: "#01f1e3",
-              },
-            },
-          },
-        ],
-      });
-      window.addEventListener("resize", function () {
-        myChart.resize();
-      });
+    timeStart() {
+      // 设置定时器
+      this.timer = setInterval(() => {
+        this.timeArry = formatDate(new Date());
+      }, 1000);
     },
   },
+  mounted() {},
 };
 </script>
+
 <style lang="less" scoped>
-.nextPage {
-  width: 100px;
+.view {
+  flex: 1;
+  // margin-top: 50px;
+}
+.date {
+  display: flex;
+  justify-content: space-between;
+  color: #fff;
+  padding: 0 22px;
+  box-sizing: border-box;
+  line-height: 80px;
+  .time {
+    width: 200px;
+    display: flex;
+    justify-content: space-between;
+    .time_left {
+      font-size: 14px;
+      line-height: 20px;
+      .dates {
+        margin-top: 20px;
+      }
+    }
+    .time_right {
+      font-size: 22px;
+    }
+  }
+  .user {
+    font-size: 16px;
+    img {
+      width: 20px;
+      height: 20px;
+      vertical-align: middle;
+    }
+  }
+}
+.headers {
+  display: flex;
+  height: 80px;
+  // margin-top: 20px;
+  justify-content: space-between;
+  // padding: 22px;
+  // box-sizing: border-box;
+  background-image: url(../assets/img/bg_top.png);
+  background-size: 100% 100%;
+}
+.tab {
+  display: flex;
+  justify-content: space-between;
+  width: 500px;
+}
+.tabItem {
+  width: 80px;
+  font-weight: 600;
+  font-size: 20px;
+  text-align: center;
+  line-height: 80px;
+  color: #fff;
   cursor: pointer;
-  right: 150px;
-  top: 20px;
+}
+
+.active {
+  color: #03ffff;
+}
+.homes {
+  // position: relative;
+}
+.logout {
+}
+.logout {
+  cursor: pointer;
+
+  width: 100px;
   position: absolute;
+  right: 20px;
+  top: 20px;
   height: 30px;
   color: #01f1e3;
   font-size: 23px;
@@ -672,168 +294,32 @@ export default {
   border-radius: 50px;
   border: 2px solid #01f1e3;
 }
-.leftCharts {
-  margin-top: 20px;
-  width: 100%;
-  height: 250px;
-}
-.countTitle {
-  font-size: 16px;
-}
-.bg {
-  width: 80px;
-  border-radius: 10px;
-  height: 80px;
-  line-height: 80px;
-}
-.iconfont {
-  font-size: 40px;
-  color: #fff;
-}
-.china_map {
-  width: 100%;
-  height: 1000px;
-}
-.home {
-  height: 100%;
-  min-width: 1024px;
-  width: 100%;
-  position: relative;
-}
-.peopleHeight {
-  height: 290px !important;
-}
-.bg1 {
-  background-color: #fd5353;
-}
-.bg2 {
-  background-color: #ff8f1f;
-}
-.bg3 {
-  background-color: #ffc300;
-}
-.rightBoxTitle {
-  font-size: 16px;
-}
-.main {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  height: 100%;
-  .left {
-    width: 25%;
-    padding: 20px 50px;
-    box-sizing: border-box;
-    height: 100%;
-    // background-color: #fff;
-
-    .people {
-      margin-top: 30px;
-      width: 100%;
-      padding: 10px;
-      height: 180px;
-      background: #141429;
-      border-radius: 10px;
-      color: #fff;
-      text-align: start;
-      box-sizing: border-box;
-      .people_top {
-        font-size: 16px;
-        span {
-          font-size: 25px;
-          margin-left: 50px;
-          font-weight: 600;
-        }
-      }
-      .people_bot {
-        width: 100%;
-        border-radius: 10px;
-        padding: 30px;
-        box-sizing: border-box;
-        display: flex;
-        justify-content: space-between;
-        text-align: center;
-        background-color: #202042;
-        .tit {
-          font-size: 15px;
-        }
-        .count {
-          margin-top: 15px;
-          font-size: 25px;
-          font-weight: 600;
-        }
-      }
-    }
-  }
-  .right {
-    width: 25%;
-    padding: 20px 50px;
-    box-sizing: border-box;
-    // background-color: #fff;
-    height: 100%;
-    .rightBox {
-      margin-top: 40px;
-      width: 100%;
-      padding: 10px;
-      // height: 180px;
-      background: #141429;
-      border-radius: 10px;
-      color: #fff;
-      text-align: start;
-      box-sizing: border-box;
-      .charts {
-        width: 100%;
-        height: 205px;
-      }
-    }
-  }
-  .center {
-    padding: 20px 50px;
-    box-sizing: border-box;
-    width: 50%;
-    height: 100%;
-    .centerCount {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 100px;
-      box-sizing: border-box;
-      height: 80px;
-      // background-color: red;
-      .countItem {
-        display: flex;
-        // width: 180px;
-        justify-content: space-between;
-        .countBox {
-          margin-left: 20px;
-          // width: 100px;
-          padding: 15px 0;
-          color: #fff;
-          box-sizing: border-box;
-          text-align: center;
-          .count {
-            font-size: 30px;
-          }
-        }
-      }
-    }
-  }
-}
-.jiguan {
-  width: 200px;
+.date {
   text-align: start;
+  width: 400px;
+  font-size: 16px;
+
   color: #fff;
-  font-size: 14px;
-  position: absolute;
-  left: 500px;
-  top: 278px;
-  .jiguanItem {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    line-height: 30px;
-    height: 30px;
-    line-height: 40px;
-  }
+}
+.title {
+  line-height: 80px;
+  color: #fff;
+  font-size: 36px;
+  height: 80px;
+  flex: 1;
+  padding-right: 80px;
+  text-align: center;
+  font-family: "Adobe Heiti Std R";
+}
+.el-select{
+  width: 80px;
+  margin-top: 20px;
+  
+}
+/deep/ .el-input__inner{
+  background-color: #0A0C18;
+  color: #fff;
+  border: 2px solid #173F62;
+
 }
 </style>
