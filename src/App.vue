@@ -23,7 +23,7 @@ export default {
   transform: translate(-50%, -50%);
   transform-origin: left top;
   overflow: hidden;
-  background-color:#070A33;
+  background-color:#061025;
 
   // font-family: Avenir, Helvetica, Arial, sans-serif;
   // -webkit-font-smoothing: antialiased;
@@ -39,7 +39,7 @@ export default {
 }
 
 body{
-  background-color:#070A33;
+  background-color:#061025;
 
   // width: 100%;
   // position: relative;

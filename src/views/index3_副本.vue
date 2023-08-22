@@ -1,13 +1,22 @@
 <template>
   <div class="main">
     <div class="main_left">
-      <div class="course_school">
-        <div class="frame">
-        <div class="frame-box">
+      <!-- <div class="course_school"> -->
+      <dv-border-box-13
+        :color="['#3981A4']"
+        backgroundColor="rgba(58,127,158,0.2)"
+        class="box_height1 course_school"
+      >
+        <div class="tits">
+          <dv-decoration-3 style="width: 150px; height: 20px" />
+          <div class="tit_text">教师结对数据</div>
+          <!-- <div class="frame">
+          <div class="frame-box">
+            教师结对数据
+          </div>
+        </div> -->
         </div>
-    </div>
 
-        <div class="box_title">教师结对数据</div>
         <div class="courseList">
           <div
             class="courseItem"
@@ -17,23 +26,53 @@
             <img :src="item.img" alt="" />
             <div class="right">
               <div class="title">{{ item.name }}</div>
-              <div class="count">{{ item.count }}</div>
+              <div class="count">
+                <CountUp
+                  :delay="delay"
+                  :endVal="item.count"
+                  :options="options"
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="course_school box_height1">
-        <div class="box_title">师生签到情况</div>
+      </dv-border-box-13>
+      <!-- <div class="box_title">教师结对数据</div> -->
+      <!-- </div> -->
+      <dv-border-box-13
+        :color="['#3981A4']"
+        backgroundColor="rgba(58,127,158,0.2)"
+        class="box_height2 course_school"
+      >
+        <div class="tits">
+          <dv-decoration-3 style="width: 150px; height: 20px" />
+          <div class="tit_text">师生签到情况</div>
+        </div>
         <div class="count1">{{ parseInt(all_sign).toFixed(0) }}%</div>
         <div class="name1">总签到率</div>
         <div class="circle">
           <div class="circles circle1">
-            <div class="count">{{ sign_data.teacher_real_num }}</div>
+            <div class="count">
+                   
+                <CountUp
+                :delay="delay"
+                :endVal="1198"
+                :options="options"
+              />
+              <!-- {{  sign_data.teacher_real_num}} -->
+            </div>
             <div class="countTit">教师签到数</div>
           </div>
           <img src="../assets/img/bg_data_index2.png" alt="" />
           <div class="circles circle2">
-            <div class="count">{{ sign_data.student_real_num }}</div>
+            <div class="count">
+                <CountUp
+                :delay="delay"
+                :endVal="49998"
+                :options="options"
+              />
+             <!-- {{ sign_data.student_real_num }} -->
+                </div>
             <div class="countTit">学生签到数</div>
           </div>
         </div>
@@ -50,26 +89,49 @@
             :key="index"
           >
             <div class="tableTit">{{ item.title }}</div>
-            <div class="tableTecherCount">{{ item.teacherCount }}</div>
-            <div class="tableStudentCount">{{ item.studentCount }}</div>
+            <div class="tableTecherCount">
+                <CountUp
+                :delay="delay"
+                :endVal="item.teacherCount"
+                :options="options"
+              />
+              <span v-if="index==2">%</span>
+               </div>
+            <div class="tableStudentCount">
+                <CountUp
+                :delay="delay"
+                :endVal="item.studentCount"
+                :options="options"
+              />
+              <span v-if="index==2">%</span>
+            </div>
+              
+
           </div>
         </div>
-      </div>
+      </dv-border-box-13>
+      <!-- </div> -->
     </div>
     <div class="main_center">
       <div class="topCount">
-        <div class="top_left">
+        <dv-border-box-8 :reverse="true" class="top_left">
           <div class="tit">总访问人数</div>
-          <div class="count">{{ vistor7 }}</div>
-        </div>
-        <div class="top_center">
+          <div class="count">
+            <CountUp :delay="delay" :endVal="vistor7" :options="options" />
+          </div>
+        </dv-border-box-8>
+        <dv-border-box-8 :reverse="true" class="top_left">
           <div class="tit">教师数访问人数</div>
-          <div class="count">{{ vistor8 }}</div>
-        </div>
-        <div class="top_right">
+          <div class="count">
+            <CountUp :delay="delay" :endVal="vistor8" :options="options" />
+          </div>
+        </dv-border-box-8>
+        <dv-border-box-8 :reverse="true" class="top_left">
           <div class="tit">学生访问人数</div>
-          <div class="count">{{ vistor9 }}</div>
-        </div>
+          <div class="count">
+            <CountUp :delay="delay" :endVal="vistor9" :options="options" />
+          </div>
+        </dv-border-box-8>
       </div>
 
       <div class="map">
@@ -95,46 +157,70 @@
             <div class="tit">题库新增量</div>
           </div>
         </div>
-        <Geo class="geo" datas="30rem"></Geo>
+        <Geo  class="geo" datas="30rem"></Geo>
       </div>
 
-      <div class="course_school box_height2">
-        <div class="box_title">题库新增题量</div>
+      <dv-border-box-11
+        title="题库新增题量"
+        :color="['#45D8E1', '#061025']"
+        backgroundColor="rgba(58,127,158,0.2)"
+        class="course_school box_height3"
+      >
         <div class="barchart" id="barchart"></div>
-      </div>
+      </dv-border-box-11>
     </div>
     <div class="main_right">
-      <div class="course_school box_height3">
-        <div class="box_title">研学机构类型</div>
+      <dv-border-box-13
+        :color="['#3981A4']"
+        backgroundColor="rgba(58,127,158,0.2)"
+        class="course_school box_height3"
+      >
+        <div class="tits">
+          <dv-decoration-1 style="width: 150px; height: 20px" />
+          <div class="tit_text">研学机构类型</div>
+        </div>
         <div class="leidatu">
           <div class="leida" id="leida"></div>
           <div class="leida" id="leida1"></div>
         </div>
-      </div>
-      <div class="course_school box_height4">
-        <div class="box_title">访问量统计</div>
+      </dv-border-box-13>
+      <dv-border-box-13
+        :color="['#3981A4']"
+        backgroundColor="rgba(58,127,158,0.2)"
+        class="course_school box_height4"
+      >
+        <div class="tits">
+          <dv-decoration-1 style="width: 150px; height: 20px" />
+          <div class="tit_text">访问量统计</div>
+        </div>
         <div class="zixunBox">
           <div class="zixunItem">
-            <div class="count">{{ vistor1 }}</div>
+            <div class="count">
+              <CountUp :delay="delay" :endVal="vistor1" :options="options" />
+            </div>
             <img src="../assets/img/bg_data_index5.png" alt="" />
             <div class="tit">乐作业</div>
           </div>
           <div class="zixunItem">
-            <div class="count">{{ vistor1 }}</div>
+            <div class="count">
+              <CountUp :delay="delay" :endVal="vistor1" :options="options" />
+            </div>
             <img src="../assets/img/bg_data_index5.png" alt="" />
             <div class="tit">乐研学</div>
           </div>
         </div>
         <div class="todayCharts" id="todayCharts"></div>
         <div class="todayCharts" id="todayCharts1"></div>
-      </div>
+      </dv-border-box-13>
     </div>
   </div>
 </template>
-
-<script>
+  
+  <script>
 import drawMixin from "../utils/drawMixin";
-import Geo from "@/components/geo";
+import Geo from "@/components/geo3";
+import CountUp from "vue-countup-v2";
+
 import {
   login,
   get_jiedui,
@@ -151,9 +237,20 @@ import {
 
 export default {
   mixins: [drawMixin],
+
   name: "",
   data() {
     return {
+      options: {
+        useEasing: true,
+        duration: 10,
+        useGrouping: true,
+        separator: ",",
+        decimal: ".",
+        prefix: "",
+        suffix: "",
+      },
+      delay: 5,
       hours1: [],
       hours2: [],
       count1: [],
@@ -169,7 +266,6 @@ export default {
       data1: [],
       indicator2: [],
       data2: [],
-    
       schoolCourseList: [
         {
           name: "开课次数",
@@ -234,6 +330,7 @@ export default {
   },
   components: {
     Geo,
+    CountUp,
   },
   created() {
     this.getVisitors();
@@ -258,7 +355,14 @@ export default {
     //   }
     // });
   },
-  mounted() {},
+  mounted() {
+   
+  },
+  beforeDestroy() {
+    if (this.vantaEffect) {
+      this.vantaEffect.destroy()
+    }
+  },
   methods: {
     getTaskVisitors() {
       get_task_visitors_day().then((res) => {
@@ -359,11 +463,12 @@ export default {
         this.tableData[2].teacherCount =
           parseInt(
             (res[0].teacher_real_num / res[0].teacher_should_num) * 100
-          ).toFixed(0) + "%";
+          ).toFixed(0) 
+          console.log( this.tableData[2].teacherCount,'222')
         this.tableData[2].studentCount =
           parseInt(
             (res[0].student_real_num / res[0].student_should_num) * 100
-          ).toFixed(0) + "%";
+          ).toFixed(0) ;
         this.sign_data = res[0];
         this.all_sign =
           ((res[0].student_real_num + res[0].teacher_real_num) /
@@ -643,100 +748,60 @@ export default {
     initLeidaChart(name, data1, data2) {
       let myChart = this.$echarts.init(document.getElementById(name));
       var option = {
-        radar: {
-          center: ["50%", "50%"],
-          radius: 70,
-          splitNumber: 0,
-          splitLine: {
-            show: true,
-            lineStyle: {
-              width: 3,
-              color: "#12589C", // 设置网格的颜色
+        color: ["#4BE1C4", "#B86AC6", "#38BAFE"],
+        // legend: {},
+        radar: [
+          {
+            indicator: data1,
+            center: ["50%", "50%"],
+            radius: 70,
+            startAngle: 90,
+            splitNumber: 4,
+            shape: "circle",
+            axisName: {
+              formatter: "【{value}】",
+              color: "#428BD4",
+            },
+            // splitArea: {
+            //   areaStyle: {
+            //     color: ["#77EADF", "#26C3BE", "#64AFE9", "#428BD4"],
+            //     shadowColor: "rgba(0, 0, 0, 0.2)",
+            //     shadowBlur: 10,
+            //   },
+            // },
+            axisLine: {
+              lineStyle: {
+                color: "rgba(211, 253, 250, 0.8)",
+                type: "dashed",
+              },
+            },
+            splitLine: {
+              lineStyle: {
+                color: "rgba(211, 253, 250, 0.8)",
+                type: "dashed",
+              },
             },
           },
-          name: {
-            textStyle: {
-              color: "#fff",
-              fontSize: 10,
-              fontWeight: "500",
-              padding: 0,
-            },
-          },
-          axisLine: {
-            show: false,
-          },
-          splitArea: {
-            show: false,
-            areaStyle: {
-              color: "rgba(255,0,0,0)", // 图表背景的颜色
-            },
-          },
-          indicator: data1,
-        },
+        ],
         series: [
           {
             type: "radar",
+            emphasis: {
+              lineStyle: {
+                width: 4,
+              },
+            },
             data: [
               {
                 value: data2,
-                symbol: "none",
-                symbolSize: 5,
-                label: {
-                  show: false,
-                  formatter: function (params) {
-                    return params.value;
-                  },
-                },
-                lineStyle: {
-                  color: "#05FF63",
-                  width: 3,
-                },
+                name: "DataA",
                 areaStyle: {
-                  color: new this.$echarts.graphic.RadialGradient(0.1, 0.6, 1, [
-                    {
-                      color: "rgba(5, 255, 99, 0.6)",
-                      offset: 0,
-                    },
-                    {
-                      color: "rgba(10, 13, 23, 1)",
-                      offset: 1,
-                    },
-                  ]),
+                  color: "rgba(75,225,196, 0.6)",
                 },
               },
             ],
           },
-          // {
-          //   type: "radar",
-          //   data: [
-          //     {
-          //       value: [140, 120, 134, 125, 108, 134],
-          //       label: {
-          //         show: false,
-          //         formatter: function (params) {
-          //           return params.value;
-          //         },
-          //       },
-          //       symbol: "none",
-          //       lineStyle: {
-          //         color: "#12589C",
-          //         width: 3,
-          //       },
-          //       areaStyle: {
-          //         color: new this.$echarts.graphic.RadialGradient(0.1, 0.6, 1, [
-          //           {
-          //             color: "rgba(51, 220, 234, 0.6)",
-          //             offset: 0,
-          //           },
-          //           {
-          //             color: "rgba(10, 13, 23, 1)",
-          //             offset: 1,
-          //           },
-          //         ]),
-          //       },
-          //     },
-          //   ],
-          // },
+        
         ],
       };
 
@@ -750,9 +815,9 @@ export default {
       let option = {
         grid: {
           show: false,
-          top: "25%", // 一下数值可为百分比也可为具体像素值
+          top: "30%", // 一下数值可为百分比也可为具体像素值
           right: "5%",
-          bottom: "20%",
+          bottom: "10%",
           left: "10%",
         },
         xAxis: {
@@ -829,10 +894,34 @@ export default {
   },
 };
 </script>
+  
+  <style lang="less" scoped>
+.frame {
+  margin-left: 20px;
+  display: inline-block;
+  padding: 7px;
+  background: linear-gradient(#68cdc7, #68cdc7) left top,
+    linear-gradient(#68cdc7, #68cdc7) left top,
+    linear-gradient(#68cdc7, #68cdc7) right top,
+    linear-gradient(#68cdc7, #68cdc7) right top,
+    linear-gradient(#68cdc7, #68cdc7) left bottom,
+    linear-gradient(#68cdc7, #68cdc7) left bottom,
+    linear-gradient(#68cdc7, #68cdc7) right bottom,
+    linear-gradient(#68cdc7, #68cdc7) right bottom;
+  background-repeat: no-repeat;
+  background-size: 2px 10px, 10px 2px;
+}
 
-<style lang="less" scoped>
-
-
+.frame-box {
+  // width: 200px;
+  height: 20px;
+  line-height: 20px;
+  background: rgba(0, 0, 0, 0.3);
+}
+.tits {
+  display: flex;
+  color: #fff;
+}
 @-webkit-keyframes rotation {
   from {
     -webkit-transform: rotate(0deg);
@@ -891,11 +980,12 @@ export default {
 .circle3 {
   position: absolute;
   right: -20px;
+  
   top: 380px;
   transform: translate(-50%, -50%);
   height: 149px;
   width: 149px;
-  z-index: 99;
+    z-index: 99;
   border-radius: 180px;
   display: flex;
   // flex-direction: column-reverse;
@@ -945,24 +1035,23 @@ export default {
     width: 550px !important;
   }
   .box_height1 {
-    height: 580px !important;
+    height: 310px !important;
   }
   .box_height2 {
-    height: 289px !important;
+    height: 580px !important;
   }
   .box_height3 {
-    height: 250px !important;
+    height: 290px !important;
   }
   .box_height4 {
-    height: 630px !important;
+    height: 600px !important;
   }
   .course_school {
     width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
     margin-top: 30px;
-  
-    height: 301px;
-    background-image: url(../assets/img/bg_card.png);
-    background-size: 100% 100%;
+    //   height: 301px;
     position: relative;
     .box_title {
       position: absolute;
@@ -1071,7 +1160,7 @@ export default {
   }
 }
 .topCount {
-  margin-top: 30px;
+  margin-top: 40px;
 
   width: 100%;
   display: flex;
@@ -1089,8 +1178,8 @@ export default {
   .top_left {
     width: 232px;
     height: 91px;
-    background-image: url(../assets/img/bg_data_3.png);
-    background-size: 100% 100%;
+    //   background-image: url(../assets/img/bg_data_3.png);
+    //   background-size: 100% 100%;
     .tit {
       margin-top: 23px;
     }
@@ -1119,6 +1208,8 @@ export default {
   position: relative;
   width: 100%;
   .yanxueCourse {
+  z-index: 99;
+
     position: absolute;
     left: 40px;
     top: 300px;
@@ -1147,22 +1238,22 @@ export default {
 }
 .barchart {
   width: 100%;
-  height: 300px;
+  height: 100%;
 }
 .leida {
   width: 50%;
-  height: 300px;
+  height: 200px;
   margin-top: 30px;
 }
 .leidatu {
-  padding: 0 50px;
+  padding: 0 10px;
   box-sizing: border-box;
   overflow: hidden;
   display: flex;
   justify-content: space-between;
 }
 .zixunBox {
-  padding-top: 80px;
+  padding-top: 40px;
   box-sizing: border-box;
   width: 100%;
   display: flex;
@@ -1182,7 +1273,7 @@ export default {
   }
   img {
     width: 246px;
-    height: 65px;
+    height: 55px;
   }
   .tit {
     width: 100%;
@@ -1196,3 +1287,4 @@ export default {
   height: 230px;
 }
 </style>
+  

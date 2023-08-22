@@ -7,7 +7,8 @@ import store from '../store/index'
 
 // 环境的切换
 if (process.env.NODE_ENV === 'development') {
-    axios.defaults.baseURL = '/api'
+    axios.defaults.baseURL = '/apis'
+    
 } else if (process.env.NODE_ENV === 'production') {
     axios.defaults.baseURL = ''
 }

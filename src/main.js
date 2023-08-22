@@ -11,6 +11,7 @@ import 'echarts-liquidfill'
 
 
 import ElementUI from 'element-ui'
+import dataV from '@jiaminghi/data-view'
 
 // import ELEMENT from 'element-ui'
 
@@ -40,6 +41,7 @@ Vue.prototype.$echarts = echarts
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
+Vue.use(dataV)
 // Vue.use(echarts)
 // axios.defaults.baseURL='/hld'
 // axios.defaults.baseURL='/api'

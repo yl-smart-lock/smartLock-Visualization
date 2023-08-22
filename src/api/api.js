@@ -19,6 +19,8 @@ export const get_task_time= p => httpGet(`/api/v1/task_time/`);
 export const get_src_view= p => httpGet(`/api/v1/src-view/`);
 
 export const get_src_dl= p => httpGet(`/api/v1/src-dl/`);
+export const get_getKuang= p => httpGet(`/api/v1/ltf/proxy_get/api/v1/school-service/school/search-school-statistics-list?educationBureauId=21&pageSize=500&semesterId=145`);
+
 
 export const get_activity= p => httpGet(`/api/v1/activity/`);
 export const get_agency= p => httpGet(`/api/v1/agency/`);

@@ -45,7 +45,8 @@ module.exports = {
 
   devServer: {
     proxy: {
-      '/api': {
+      
+      '/apis': {
         // target: 'http://6.196.87.160:8000/',
         target: 'https://edu.aidanke.com/',
         // target: 'https://huilaodong.aidanke.com//hld/',
@@ -53,12 +54,12 @@ module.exports = {
         ws: false,
         changeOrigin: true,
         pathRewrite: {
-          "^/api": ""
+          "^/apis": ""
         }
       },
       '/hld-media': {
         // target: 'http://6.196.87.160:8000/',
-        target: 'https://edu.aidanke.com/',
+        target: 'https:/edu.aidanke.com//',
         // target: 'https://huilaodong.aidanke.com/',
         ws: false,
         changeOrigin: true,
